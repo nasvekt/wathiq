@@ -33,8 +33,15 @@ DEFAULT_RULES = {
 
     # WPS
     "wps_expat_floor": 3200.00,
+    "wps_expatriate_floor": 3200.00,  # alias
     "wps_saudi_min_for_nitaqat": 4000.00,
     "wps_variance_tolerance_pct": 0.10,
+
+    # GOSI scheme classification
+    "gosi_scheme_age_threshold": 50,
+    "gosi_scheme_months_threshold": 12,
+    "gosi_employer_share_progressive": 0.13,  # 12% + 1% SANED
+    "gosi_employee_share_progressive": 0.095,
 
     # Housing
     "housing_min_pct_of_basic": 0.10,

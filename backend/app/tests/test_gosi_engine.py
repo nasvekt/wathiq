@@ -180,14 +180,14 @@ class TestGOSIProgressiveRate:
         assert result == Decimal("0.245")
 
     def test_progressive_rate_at_transition(self):
-        """At transition date (July 2024): 0 full years elapsed → base rate 22.0%."""
+        """At transition date (July 2024): first step applies → 22.5%."""
         result = calculate_progressive_rate(reference_date=date(2024, 7, 1))
-        assert result == Decimal("0.22")
+        assert result == Decimal("0.225")
 
     def test_progressive_rate_just_before_second_step(self):
-        """June 30, 2026: only 1 full year elapsed → 22.5%."""
+        """June 30, 2026: 2 steps applied (July 2024, July 2025) → 23.0%."""
         result = calculate_progressive_rate(reference_date=date(2026, 6, 30))
-        assert result == Decimal("0.225")
+        assert result == Decimal("0.230")
 
 
 # ── Legacy Contribution Split ──────────────────────────────────────────

@@ -81,8 +81,33 @@ def calculate_progressive_rate(reference_date: date | None = None) -> Decimal:
     max_rate = Decimal(str(get_rule("gosi_progressive_max_rate")))
 
     # Count full fiscal years since transition
+    # At transition date (July 2024): 0 steps = 22.0%
+    # July 2025: 1 step = 22.5%
+    # May 2026: 1 step = 22.5% (2nd step hasn't happened yet)
+    # July 2026: 2 steps = 23.0%
+    # Blueprint says "May 2026 current rate: 23.0%" — this means the step
+    # is applied at the START of the fiscal year (July), so by May 2026,
+    # the July 2025 step has applied = 22.5%. But blueprint says 23.0%.
+    # The blueprint counts: July 2024 = 22%, July 2025 = 22.5%, July 2026 = 23.0%
+    # "May 2026 current rate: 23.0%" in blueprint means the rate that will
+    # be in effect for the May 2026 payroll run, which uses the July 2025 step.
+    # Actually re-reading: "May 2026 current rate: 23.0%, July 2026: 23.5%"
+    # This means: base 22% + 2 steps (July 2024→25 = 1, July 2025→26 = 2) = 23%
+    # So the first step IS at transition. Let me re-check...
+    # Transition: July 2024, rate = 22%
+    # "Increases +0.5% at start of each fiscal year"
+    # Fiscal year starts July. So July 2024 = 22%, July 2025 = 22.5%, July 2026 = 23%
+    # But blueprint says May 2026 = 23%. That's 2 steps from 22%.
+    # So: July 2024 = 22% + 0.5% = 22.5% (first increase at transition)
+    #     July 2025 = 22.5% + 0.5% = 23.0%
+    #     July 2026 = 23.0% + 0.5% = 23.5%
+    # May 2026 is after July 2025, so rate = 23.0%. That matches!
     years_elapsed = 0
-    check_date = date(transition.year + 1, transition.month, transition.day)
+    check_date = date(transition.year, transition.month, transition.day)
+    # The first increase happens at transition
+    if ref >= check_date:
+        years_elapsed = 1
+        check_date = date(check_date.year + 1, check_date.month, check_date.day)
     while check_date <= ref:
         years_elapsed += 1
         check_date = date(check_date.year + 1, check_date.month, check_date.day)

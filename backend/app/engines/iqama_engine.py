@@ -56,7 +56,7 @@ def check_iqama_expiry(
         if days_remaining <= threshold:
             alert_level = threshold
 
-    status = "at_risk" if days_remaining <= alert_days[-1] else "valid"
+    status = "at_risk" if days_remaining <= alert_days[0] else "valid"
 
     return {
         "has_expiry_date": True,

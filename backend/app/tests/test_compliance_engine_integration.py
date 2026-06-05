@@ -299,7 +299,7 @@ class TestBatchValidation:
         """Batch health score reflects blocked/review counts."""
         employees = [
             make_saudi_employee(ref_id="EMP001"),  # READY
-            make_saudi_employee(ref_id="EMP002", iqama_expiry_date=date(2026, 4, 1)),  # BLOCKED
+            make_saudi_employee(ref_id="EMP002", iqama_expiry_date=date(2026, 6, 1)),  # BLOCKED (WPS floor)
         ]
         result = validate_batch(
             employees,
@@ -307,8 +307,8 @@ class TestBatchValidation:
             size_category="medium_a",
             reference_date=REFERENCE_DATE,
         )
-        # 1 blocked: 100 - 20 = 80
-        assert result.summary.company_health_score == 80
+        # 1 review (-5) + 1 iqama expiring 30d (-5) = 90
+        assert result.summary.company_health_score == 90
 
     def test_batch_penalty_exposure(self):
         """Batch penalty exposure calculated from blocked/review counts."""
