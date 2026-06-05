@@ -2,12 +2,11 @@
 Wathiq — Nitaqat simulation endpoint.
 POST /api/v1/simulate/nitaqat
 """
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from decimal import Decimal
 from typing import Optional
 from app.engines.nitaqat_engine import calculate_saudization_ratio, classify_nitaqat_band
-from app.engines.rules_fetcher import get_nitaqat_targets
 
 router = APIRouter()
 
@@ -31,18 +30,16 @@ async def simulate_nitaqat(request: NitaqatSimulationRequest):
     try:
         # Current state
         current_ratio = calculate_saudization_ratio(
-            sum_saudi_weights=request.current_saudi_weight,
             total_employees=request.current_total_employees,
+            saudi_weights_sum=request.current_saudi_weight,
         )
 
         # Projected state
+        add_saudi_weight = Decimal(str(request.add_saudi))
         new_total = request.current_total_employees + request.add_saudi - request.remove_expat
-        new_saudi_weight = request.current_saudi_weight
+        new_saudi_weight = request.current_saudi_weight + add_saudi_weight
 
-        # Add full-weight Saudis
-        new_saudi_weight += Decimal(str(request.add_saudi))
-
-        # Add part-time Saudi if specified
+        # Add part-time Saudi if 160+ hours
         if request.add_part_time_saudi_hours and request.add_part_time_saudi_hours >= 160:
             new_saudi_weight += Decimal(str(request.add_saudi or 0))
 
@@ -50,15 +47,17 @@ async def simulate_nitaqat(request: NitaqatSimulationRequest):
             raise HTTPException(status_code=400, detail="Projected workforce would be empty")
 
         projected_ratio = calculate_saudization_ratio(
-            sum_saudi_weights=new_saudi_weight,
             total_employees=new_total,
+            saudi_weights_sum=new_saudi_weight,
         )
 
-        # Get Nitaqat targets
-        targets = get_nitaqat_targets(request.sector_code, request.size_category)
-
-        current_band = classify_nitaqat_band(current_ratio, targets)
-        projected_band = classify_nitaqat_band(projected_ratio, targets)
+        # Classify bands using sector x size matrix from engine
+        current_band = classify_nitaqat_band(
+            current_ratio, request.sector_code, request.size_category
+        )
+        projected_band = classify_nitaqat_band(
+            projected_ratio, request.sector_code, request.size_category
+        )
 
         band_priority = {"red": 0, "yellow": 1, "low_green": 2, "high_green": 3, "platinum": 4}
         band_drop = band_priority.get(projected_band, 0) < band_priority.get(current_band, 0)
@@ -69,7 +68,6 @@ async def simulate_nitaqat(request: NitaqatSimulationRequest):
             "projected_ratio": float(projected_ratio),
             "projected_band": projected_band,
             "band_drop_warning": band_drop,
-            "targets": targets,
         }
     except HTTPException:
         raise

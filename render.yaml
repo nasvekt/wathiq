@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: wathiq-backend
+    env: python
+    region: frankfurt
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: SUPABASE_URL
+        value: https://yywowhdgwcxulgnglcck.supabase.co
+      - key: SUPABASE_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        value: https://wathiq.onrender.com,http://localhost:5173
+      - key: LOG_LEVEL
+        value: INFO
+      - key: APP_VERSION
+        value: 0.2.0
+      - key: DEBUG
+        value: false
+    envVarGroups:
+      - wathiq-secrets
