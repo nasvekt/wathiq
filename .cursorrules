@@ -1,0 +1,154 @@
+# Wathiq — AI Agent Context File
+# Blueprint Section 23AA
+# Last updated: May 2026
+
+## Product Context
+
+Wathiq (وثيق) is a Saudi corporate payroll compliance gateway. It validates employee payroll records against Saudi labor law, GOSI pension rules, Nitaqat nationalization quotas, WPS salary floors, Qiwa contract windows, and other regulatory requirements. The system processes batches of employee records through 10 deterministic compliance engines and returns per-employee status (ready/review/blocked) plus company-wide workforce analytics.
+
+The name "Wathiq" means "trustworthy/certified" in Arabic — reflecting the product's role as a compliance certification layer for Saudi payroll operations.
+
+## Tech Stack
+
+- **Backend API:** FastAPI (Python 3.11+), Pydantic V2, Uvicorn
+- **Database:** Supabase (PostgreSQL 15+ with pgcrypto extension)
+- **AI Layer:** Hermes (primary, via httpx client) + Google Gemini (fallback, via google-generativeai SDK)
+- **Frontend (Dashboard):** Vite + React 18 + TypeScript
+- **Frontend (Landing/Marketing):** Astro
+- **PDF Generation:** WeasyPrint + arabic-reshaper + python-bidi
+- **PDF Parsing:** pdfplumber
+- **Data Ingestion:** pandas + openpyxl (Excel/CSV)
+- **Testing:** pytest + pytest-asyncio
+- **Deployment:** Docker, Supabase Cloud
+
+## Governing Principle: Zero False Positives
+
+**A false positive — flagging a compliant record as non-compliant — is worse than a false negative.** Every compliance rule must be validated against official Saudi government sources. If a rule's current value cannot be confirmed from an official source (MHRSD, GOSI, Qiwa, Nitaqat portals), the rule must NOT be implemented. When in doubt, the system flags for human review rather than auto-blocking.
+
+This principle exists because false positives cause:
+1. Unnecessary payroll blocks → employee payment delays → legal liability
+2. Loss of trust in the system → users bypass compliance checks
+3. Incorrect penalty exposure calculations → financial misreporting
+
+## Architecture Rules
+
+### Rule 1: Rules Are Variables, Not Code
+Every compliance threshold, rate, and parameter MUST be stored in the `compliance_rules` database table (or `DEFAULT_RULES` fallback in `rules_fetcher.py`). No engine should hardcode a regulatory value inline. If a rule changes (e.g., GOSI rate increases), only the database row is updated — no code deployment needed.
+
+### Rule 2: Two-Layer Ingestion Pipeline
+All data ingestion follows a strict two-layer pattern:
+- **Layer 1 (Structural):** File format validation, column mapping, type coercion, deduplication. Handled by ingestion modules using pandas.
+- **Layer 2 (Semantic):** Pydantic V2 schema validation (`EmployeeInput`). Validates business rules: Iqama format, salary positivity, field constraints. Catches anomalies before they reach engines.
+
+### Rule 3: Hermes vs Gemini — Clear Separation
+- **Hermes** is the PRIMARY AI layer. Used for: SSCo job title classification, natural language compliance Q&A, anomaly explanation, and report summarization. Called via `httpx` async client to `HERMES_BASE_URL`.
+- **Gemini** is the FALLBACK AI layer. Used only when Hermes is unavailable or returns low-confidence results. Called via `google-generativeai` SDK.
+- **Neither** is used for compliance decisions. All compliance logic is deterministic (engines). AI is for classification and explanation only.
+
+### Rule 4: Deterministic Core, AI Periphery
+The 10 compliance engines are 100% deterministic. No AI model ever decides whether an employee passes or fails a compliance check. AI models (Hermes/Gemini) are only used for:
+- SSCo code classification from free-text job titles
+- Natural language explanations of compliance failures
+- Report summarization for the dashboard
+
+### Rule 5: Every Employee Gets a Status
+Every employee record processed must receive exactly one of: `ready`, `review`, `blocked`, `at_risk`, `pending`. No record is ever silently skipped. The status determination logic is:
+- `blocked` = any hard rule violation (expired Iqama, WPS floor violation, missing GOSI enrollment)
+- `review` = any soft rule violation (contract window warning, engineer wage below floor, WPS variance)
+- `ready` = no flags at all
+
+### Rule 6: Transaction Traceability
+Every validation request generates a unique `transaction_id` (format: `tx-{timestamp}-{uuid8}`). All results are stored in Supabase with this ID for audit trail. The API response includes `transaction_id`, `processed_at`, `engine_version`, and `rules_version`.
+
+### Rule 7: Stateless API, Stateful Database
+The FastAPI backend is stateless. All persistent data lives in Supabase PostgreSQL. The API does not maintain in-memory state between requests. Session/auth state is managed via Supabase Auth JWT tokens.
+
+### Rule 8: Fail-Safe Defaults
+If a compliance rule cannot be fetched (database unavailable, key missing), the system defaults to the most restrictive interpretation rather than allowing a potentially non-compliant record through. This aligns with the zero-false-positive principle.
+
+### Rule 9: Bilingual by Default
+All user-facing strings must support both English and Arabic. The API returns English by default. The frontend handles i18n. Error messages in the API response should be in English (for developer consumption) but the dashboard translates them.
+
+### Rule 10: Test Coverage for Every Engine
+Every compliance engine must have corresponding tests in `backend/app/tests/`. Tests must cover: happy path, edge cases, boundary values, and known regulatory scenarios. Tests run via `pytest` in CI/CD before any deployment.
+
+## Language Rules
+
+1. **Bilingual (English/Arabic):** All user-facing content must be available in both English and Arabic. The system serves Saudi users — Arabic is not optional.
+2. **RTL Support:** The frontend must fully support right-to-left layout for Arabic. This includes: text alignment, navigation, tables, forms, PDF generation (via arabic-reshaper + python-bidi).
+3. **Never Say "AI":** In all user-facing text, never use the term "AI" or "artificial intelligence." Use "automated compliance check," "smart validation," or simply describe the function. Saudi enterprise users are skeptical of AI claims — the product positions itself as a compliance tool, not an AI product.
+4. **Formal Arabic:** Use Modern Standard Arabic (فصحى) for all Arabic text. No dialectal Arabic.
+5. **No Commas in Names:** Employee names must never contain commas (SIF file format requirement). The `EmployeeInput` schema enforces this.
+
+## Compliance Rules Reference (May 2026)
+
+All values below are stored in the `compliance_rules` table and fetched at runtime via `rules_fetcher.py`. These are the current regulatory parameters as of May 2026.
+
+### GOSI (General Organization for Social Insurance)
+| Parameter | Value | Source |
+|---|---|---|
+| Legacy scheme rate | 21.5% (12% employer + 9.5% employee) | GOSI Circular |
+| Progressive scheme base rate | 22% | GOSI Circular |
+| Progressive annual step | 0.5% per year | GOSI Circular |
+| Progressive max rate | 24.5% | GOSI Circular |
+| Progressive transition date | 2024-07-01 | GOSI Circular |
+| Expat occupational hazard rate | 2% (employer only) | GOSI Circular |
+| Wage base cap | SAR 45,000 | GOSI Circular |
+| Scheme age threshold | 50 years old or 12 months enrollment | GOSI Circular |
+
+### Nitaqat (Saudization)
+| Parameter | Value | Source |
+|---|---|---|
+| Full weight minimum wage | SAR 4,000 | Nitaqat Portal |
+| Half weight range | SAR 3,000 – SAR 3,999.99 | Nitaqat Portal |
+| Part-time hours threshold | 160 hours/month | Nitaqat Portal |
+| Bands | Platinum / High Green / Low Green / Yellow / Red | Nitaqat Portal |
+
+### WPS (Wage Protection System)
+| Parameter | Value | Source |
+|---|---|---|
+| Expat salary floor | SAR 3,200 | MHRSD |
+| Saudi minimum for Nitaqat weight | SAR 4,000 | MHRSD |
+| Variance tolerance | 10% | MHRSD |
+
+### Housing Allowance
+| Parameter | Value | Source |
+|---|---|---|
+| Minimum housing (% of basic) | 10% | Saudi Labor Law |
+
+### Expatriate Diversity Cap
+| Parameter | Value | Source |
+|---|---|---|
+| Diversity cap | 40% of workforce | MHRSD |
+| Warning threshold | 38% of workforce | MHRSD |
+| Minimum headcount for rule | 100 employees | MHRSD |
+
+### Saudi Engineer Wage Floor
+| Parameter | Value | Source |
+|---|---|---|
+| SSCo prefixes | 2141, 2142, 2143, 2144, 2145, 2146, 2149 | SSCo Classification |
+| Minimum salary | SAR 7,000 | MHRSD |
+
+### Qiwa Contract Window
+| Parameter | Value | Source |
+|---|---|---|
+| Contract publication window | 30 days from hire | Qiwa Platform |
+| Warning day | 25 days from hire | Qiwa Platform |
+
+### Iqama Expiry Monitoring
+| Parameter | Value | Source |
+|---|---|---|
+| Alert thresholds | 90, 60, 30, 7 days before expiry | Passport Authority |
+
+### Compliance Statuses
+- `ready` — No flags, fully compliant
+- `review` — Soft violations, needs human review
+- `blocked` — Hard violations, must be resolved before payroll
+- `at_risk` — Approaching a violation threshold
+- `pending` — Awaiting data or external confirmation
+
+### API Endpoints
+| Method | Path | Description |
+|---|---|---|
+| GET | `/health` | Health check |
+| POST | `/api/v1/validate/compliance` | Main compliance validation |

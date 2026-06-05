@@ -1,0 +1,78 @@
+# Wathiq — Gitignore
+# Python / Node / General
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+*.whl
+venv/
+.venv/
+env/
+ENV/
+.ENV/
+
+# ── Environment ──
+.env
+.env.local
+.env.*.local
+*.env
+!.env.example
+
+# ── Node ──
+node_modules/
+.npm
+.yarn/
+.pnp.*
+.next/
+.nuxt/
+out/
+dist-ssr/
+
+# ── IDE ──
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ── Testing ──
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+
+# ── Logs ──
+*.log
+logs/
+
+# ── Database ──
+*.db
+*.sqlite
+*.sqlite3
+
+# ── Generated Files ──
+generated/
+output/
+outputs/
+
+# ── OS ──
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ── Docker ──
+docker-compose.override.yml
