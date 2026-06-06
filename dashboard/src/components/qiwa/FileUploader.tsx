@@ -1,5 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import * as XLSX from 'xlsx';
 
 interface Props {
   mode: 'excel' | 'manual';
@@ -26,6 +27,139 @@ const FileUploader: React.FC<Props> = ({ mode, onSubmit, onBack }) => {
   const [employees, setEmployees] = useState<any[]>([{ ...SAMPLE_EMPLOYEE, ref_id: 'emp-001' }]);
   const [companyName, setCompanyName] = useState('');
   const [dragOver, setDragOver] = useState(false);
+  const [parsedCount, setParsedCount] = useState(0);
+  const [fileName, setFileName] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const COLUMN_MAP: Record<string, string> = {
+    'employee_name': 'employee_name',
+    'name': 'employee_name',
+    'full name': 'employee_name',
+    'الاسم': 'employee_name',
+    'iqama_number': 'iqama_number',
+    'iqama': 'iqama_number',
+    'iqama id': 'iqama_number',
+    'id number': 'iqama_number',
+    'رقم الإقامة': 'iqama_number',
+    'basic_salary': 'basic_salary',
+    'basic salary': 'basic_salary',
+    'salary': 'basic_salary',
+    'الراتب الأساسي': 'basic_salary',
+    'contract_documented_in_qiwa': 'contract_documented_in_qiwa',
+    'qiwa documented': 'contract_documented_in_qiwa',
+    'qiwa': 'contract_documented_in_qiwa',
+    'documented': 'contract_documented_in_qiwa',
+    'موثق في قوى': 'contract_documented_in_qiwa',
+    'gosi_enrolled': 'gosi_enrolled',
+    'gosi': 'gosi_enrolled',
+    'مسجل في التأمينات': 'gosi_enrolled',
+    'nationality': 'nationality',
+    'الجنسية': 'nationality',
+    'job_title': 'job_title',
+    'job title': 'job_title',
+    'title': 'job_title',
+    'المسمى الوظيفي': 'job_title',
+    'total_gross_wage': 'total_gross_wage',
+    'total gross': 'total_gross_wage',
+    'gross salary': 'total_gross_wage',
+    'إجمالي الراتب': 'total_gross_wage',
+    'monthly_hours': 'monthly_hours',
+    'hours': 'monthly_hours',
+    'work hours': 'monthly_hours',
+    'ساعات العمل': 'monthly_hours',
+  };
+
+  const parseFile = (data: ArrayBuffer) => {
+    const workbook = XLSX.read(data, { type: 'array' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const json = XLSX.utils.sheet_to_json(sheet, { defval: '' }) as Record<string, any>[];
+
+    if (json.length === 0) {
+      alert('No data found in the file.');
+      return;
+    }
+
+    // Auto-detect columns
+    const headers = Object.keys(json[0]);
+    const mappedFields = headers.map(h => {
+      const key = h.toLowerCase().trim().replace(/[^a-z0-9_\u0621-\u064A\s]/g, '');
+      return COLUMN_MAP[key] || null;
+    });
+
+    const parsed = json.map((row: Record<string, any>, i: number) => {
+      const emp: any = {
+        ref_id: `emp-${(i + 1).toString().padStart(3, '0')}`,
+        employee_name: '',
+        employee_name_ar: '',
+        iqama_number: '',
+        nationality: 'Saudi Arabia',
+        is_saudi: true,
+        basic_salary: 4000,
+        total_gross_wage: 4000,
+        job_title: '',
+        contract_documented_in_qiwa: false,
+        gosi_enrolled: true,
+        monthly_hours: 0,
+      };
+
+      headers.forEach((h, idx) => {
+        const field = mappedFields[idx];
+        if (!field) return;
+        const val = row[h];
+        if (field === 'employee_name') emp.employee_name = String(val || '');
+        else if (field === 'iqama_number') emp.iqama_number = String(val || '');
+        else if (field === 'basic_salary' || field === 'total_gross_wage') {
+          const num = Number(val) || 0;
+          emp[field] = Math.max(num, 0);
+        }
+        else if (field === 'contract_documented_in_qiwa') emp.contract_documented_in_qiwa = String(val).toLowerCase() === 'yes' || val === true;
+        else if (field === 'gosi_enrolled') emp.gosi_enrolled = String(val).toLowerCase() === 'yes' || val === true;
+        else if (field === 'nationality') {
+          emp.nationality = String(val || 'Saudi Arabia');
+          emp.is_saudi = String(val).toLowerCase().includes('saudi');
+        }
+        else if (field === 'job_title') emp.job_title = String(val || '');
+        else if (field === 'monthly_hours') emp.monthly_hours = Number(val) || 0;
+      });
+
+      // Auto-compute total gross
+      if (emp.total_gross_wage < emp.basic_salary) {
+        emp.total_gross_wage = emp.basic_salary;
+      }
+
+      return emp;
+    });
+
+    setEmployees(parsed);
+    setParsedCount(parsed.length);
+    setFileName(fileName || 'Uploaded file');
+  };
+
+  const handleFileDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      setFileName(file.name);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        if (ev.target?.result) parseFile(ev.target.result as ArrayBuffer);
+      };
+      reader.readAsArrayBuffer(file);
+    }
+  }, []);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFileName(file.name);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        if (ev.target?.result) parseFile(ev.target.result as ArrayBuffer);
+      };
+      reader.readAsArrayBuffer(file);
+    }
+  };
 
   const addRow = () => {
     setEmployees([...employees, { ...SAMPLE_EMPLOYEE, ref_id: `emp-${(employees.length + 1).toString().padStart(3, '0')}` }]);
@@ -48,13 +182,6 @@ const FileUploader: React.FC<Props> = ({ mode, onSubmit, onBack }) => {
     }
   };
 
-  const handleFileDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(false);
-    // In production: parse xlsx/csv with SheetJS
-    alert(t('qiwaShield.fileParseComing'));
-  }, [t]);
-
   const handleSubmit = () => {
     if (!employees.length) return;
     onSubmit(employees, companyName);
@@ -63,20 +190,46 @@ const FileUploader: React.FC<Props> = ({ mode, onSubmit, onBack }) => {
   if (mode === 'excel') {
     return (
       <div>
-        <div
-          onDrop={handleFileDrop}
-          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-          onDragLeave={() => setDragOver(false)}
-          className={`border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition mb-4 ${
-            dragOver ? 'border-primary bg-primary/5' : 'border-gray-300 hover:border-gray-400 bg-white'
-          }`}
-        >
-          <svg className="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-          </svg>
-          <p className="text-gray-600 font-medium mb-1">{t('qiwaShield.dragDrop')}</p>
-          <p className="text-sm text-gray-400">{t('qiwaShield.supportedFormats')}</p>
-        </div>
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileSelect}
+          accept=".xlsx,.xls,.csv"
+          className="hidden"
+        />
+        {parsedCount === 0 ? (
+          <div
+            onClick={() => fileInputRef.current?.click()}
+            onDrop={handleFileDrop}
+            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+            onDragLeave={() => setDragOver(false)}
+            className={`border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition mb-4 ${
+              dragOver ? 'border-primary bg-primary/5' : 'border-gray-300 hover:border-gray-400 bg-white'
+            }`}
+          >
+            <svg className="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+            <p className="text-gray-600 font-medium mb-1">{t('qiwaShield.dragDrop')}</p>
+            <p className="text-sm text-gray-400">{t('qiwaShield.supportedFormats')}</p>
+          </div>
+        ) : (
+          <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center mb-4">
+            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-green-100 flex items-center justify-center">
+              <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <p className="text-green-800 font-medium mb-1">{parsedCount} employees parsed from {fileName}</p>
+            <p className="text-sm text-green-600 mb-3">Review the data below or upload a different file</p>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="text-sm text-primary hover:text-primary-dark font-medium transition"
+            >
+              Upload different file
+            </button>
+          </div>
+        )}
         <div className="flex items-center gap-3 mt-4">
           <button onClick={onBack} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg transition">
             {t('common.back')}
