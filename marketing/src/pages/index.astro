@@ -1,0 +1,278 @@
+---
+// Wathiq Landing Page — Enterprise Layout
+// Jisr-inspired: dark mega-nav, hero, 3-col feature cards, alternating sections, trust bar
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Wathiq — The Sovereign Compliance Gateway for Saudi Arabia">
+  <!-- ════════════════════════════════════════════ -->
+  <!-- NAVIGATION                                   -->
+  <!-- ════════════════════════════════════════════ -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-tech-black/95 backdrop-blur-sm border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-10">
+        <a href="/" class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center">
+            <span class="text-primary font-bold text-sm">و</span>
+          </div>
+          <span class="text-white font-semibold text-lg">Wathiq</span>
+        </a>
+        <div class="hidden lg:flex items-center gap-8">
+          <a href="/pricing" class="text-white-grey hover:text-white transition text-sm font-medium">Pricing</a>
+          <a href="/about" class="text-white-grey hover:text-white transition text-sm font-medium">About</a>
+          <a href="/contact" class="text-white-grey hover:text-white transition text-sm font-medium">Contact</a>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="http://localhost:8000/login" class="text-white-grey hover:text-white transition text-sm font-medium">Sign in</a>
+        <a href="/contact" class="bg-primary hover:bg-primary-dark text-tech-black font-semibold text-sm px-5 py-2.5 rounded-lg transition">
+          Request Demo
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- HERO                                         -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="min-h-screen bg-tech-black pt-20 flex items-center relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-tech-black pointer-events-none"></div>
+    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+    
+    <div class="max-w-7xl mx-auto px-6 py-24 relative z-10">
+      <div class="max-w-4xl mx-auto text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm font-medium mb-8">
+          <span class="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+          Enforcement Active — May 31, 2026
+        </div>
+        <h1 class="text-5xl md:text-7xl font-onest font-normal text-white leading-tight mb-6">
+          The Sovereign Compliance<br/>
+          <span class="text-primary">Gateway</span> for Saudi Arabia
+        </h1>
+        <p class="text-xl md:text-2xl text-charcoal font-onest max-w-3xl mx-auto mb-12 leading-relaxed">
+          Pre-audit firewall. Zero false positives. Board-ready verification.
+          Before your payroll hits the bank, Wathiq validates every record against
+          every active Saudi compliance rule.
+        </p>
+        <div class="flex items-center justify-center gap-4">
+          <a href="/contact" class="bg-primary hover:bg-primary-dark text-tech-black font-semibold text-base px-8 py-4 rounded-lg transition">
+            Request a Demo
+          </a>
+          <a href="/pricing" class="border border-white/20 hover:border-white/40 text-white font-medium text-base px-8 py-4 rounded-lg transition">
+            View Pricing
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- TRUST BAR — Customer Logos (styled)          -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="bg-tech-black border-t border-white/5 py-12">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <p class="text-xs text-charcoal uppercase tracking-widest mb-8">Trusted by compliance teams across the Kingdom</p>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center opacity-40">
+        <span class="text-white/60 text-lg font-onest font-light">Construction Co</span>
+        <span class="text-white/60 text-lg font-onest font-light">LogistiCare</span>
+        <span class="text-white/60 text-lg font-onest font-light">RetailPlus</span>
+        <span class="text-white/60 text-lg font-onest font-light">TechVentures</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- 3-COLUMN FEATURE CARDS                       -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="bg-tech-black py-24">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl text-white font-onest font-normal mb-4">Compliance Infrastructure</h2>
+        <p class="text-lg text-charcoal max-w-2xl mx-auto">Four capabilities that no other product in the market combines</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+        <!-- Card 1 -->
+        <div class="bg-surface border border-white/5 rounded-2xl p-8 hover:border-primary/30 transition group">
+          <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition">
+            <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="text-2xl text-white font-onest font-normal mb-3">Validate</h3>
+          <p class="text-charcoal leading-relaxed">Every employee record checked against GOSI, Nitaqat, WPS, and Qiwa rules before submission. Errors caught at planning stage.</p>
+        </div>
+        <!-- Card 2 -->
+        <div class="bg-surface border border-white/5 rounded-2xl p-8 hover:border-primary/30 transition group">
+          <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition">
+            <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <h3 class="text-2xl text-white font-onest font-normal mb-3">Monitor</h3>
+          <p class="text-charcoal leading-relaxed">Live company health score, Iqama expiry tracking, Saudization ratio trends, and regulatory change alerts — daily, not monthly.</p>
+        </div>
+        <!-- Card 3 -->
+        <div class="bg-surface border border-white/5 rounded-2xl p-8 hover:border-primary/30 transition group">
+          <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition">
+            <svg class="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+          <h3 class="text-2xl text-white font-onest font-normal mb-3">Certify</h3>
+          <p class="text-charcoal leading-relaxed">Bilingual Wathiq Verification Passport with SHA-256 cryptographic proof. Board-ready, court-defensible, inspector-ready.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- PROCUREMENT ENFORCEMENT SECTION              -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="bg-tech-black border-t border-white/5 py-24">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid md:grid-cols-2 gap-16 items-center">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full text-red-400 text-xs font-medium mb-6">
+            Active Enforcement
+          </div>
+          <h2 class="text-4xl md:text-5xl text-white font-onest font-normal mb-6">
+            70% Saudization in Procurement
+          </h2>
+          <p class="text-lg text-charcoal leading-relaxed mb-6">
+            Effective May 31, 2026, MHRSD is actively enforcing 70% Saudization in 12 procurement professions. 
+            Inspection teams are in the field. Qiwa contracts are being cross-checked against GOSI records.
+          </p>
+          <ul class="space-y-3 mb-8">
+            <li class="flex items-start gap-3 text-white-grey">
+              <svg class="w-5 h-5 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span>Title-Duties Mismatch Detector — AI-powered risk scoring</span>
+            </li>
+            <li class="flex items-start gap-3 text-white-grey">
+              <svg class="w-5 h-5 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span>Etimad Tender Passport — government tender-ready certification</span>
+            </li>
+            <li class="flex items-start gap-3 text-white-grey">
+              <svg class="w-5 h-5 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span>Inspection Simulator — organized data room in one click</span>
+            </li>
+          </ul>
+          <a href="/contact" class="inline-flex items-center gap-2 text-primary hover:text-primary-dark font-medium transition">
+            Check your procurement compliance
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </a>
+        </div>
+        <div class="bg-surface border border-white/5 rounded-3xl p-8 md:p-12">
+          <div class="text-5xl font-onest font-bold text-primary mb-4">70%</div>
+          <p class="text-white font-onest text-xl mb-6">Required Saudization in Procurement</p>
+          <div class="space-y-4">
+            <div class="flex justify-between text-sm">
+              <span class="text-charcoal">Procurement Manager</span>
+              <span class="text-white">SSCO 1321</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-charcoal">Contracts Manager</span>
+              <span class="text-white">SSCO 1219</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-charcoal">Purchasing Specialist</span>
+              <span class="text-white">SSCO 3323</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-charcoal">Logistics Coordinator</span>
+              <span class="text-white">SSCO 3331</span>
+            </div>
+            <div class="pt-4 border-t border-white/10">
+              <p class="text-xs text-charcoal">12 procurement roles monitored · 3+ employees triggers the rule</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- MARKET SIZE SECTION                          -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="bg-tech-black border-t border-white/5 py-24">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="text-center p-8 bg-surface border border-white/5 rounded-2xl">
+          <div class="text-4xl font-onest font-bold text-primary mb-2">SAR 1.35B</div>
+          <p class="text-charcoal text-sm">KSA HR Tech Market (2025)</p>
+        </div>
+        <div class="text-center p-8 bg-surface border border-white/5 rounded-2xl">
+          <div class="text-4xl font-onest font-bold text-primary mb-2">8%</div>
+          <p class="text-charcoal text-sm">Annual Market Growth</p>
+        </div>
+        <div class="text-center p-8 bg-surface border border-white/5 rounded-2xl">
+          <div class="text-4xl font-onest font-bold text-primary mb-2">SAR 2.6B</div>
+          <p class="text-charcoal text-sm">Projected Market (2034)</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- CTA BANNER                                   -->
+  <!-- ════════════════════════════════════════════ -->
+  <section class="bg-tech-black border-t border-white/5 py-24">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      <h2 class="text-4xl md:text-5xl text-white font-onest font-normal mb-6">
+        One blocked month costs more than<br/>
+        <span class="text-primary">an annual subscription</span>
+      </h2>
+      <p class="text-lg text-charcoal mb-10 max-w-2xl mx-auto">
+        A Nitaqat block stops visas, transfers, and renewals. Resolving it costs 
+        SAR 200,000–500,000. Wathiq starts at SAR 14,400/year.
+      </p>
+      <div class="flex items-center justify-center gap-4">
+        <a href="/contact" class="bg-primary hover:bg-primary-dark text-tech-black font-semibold text-base px-8 py-4 rounded-lg transition">
+          Start Your Compliance Check
+        </a>
+        <a href="/pricing" class="border border-white/20 hover:border-white/40 text-white font-medium text-base px-8 py-4 rounded-lg transition">
+          See Plans
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════ -->
+  <!-- FOOTER                                       -->
+  <!-- ════════════════════════════════════════════ -->
+  <footer class="bg-tech-black border-t border-white/5 py-16">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid md:grid-cols-4 gap-8 mb-12">
+        <div>
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-6 h-6 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center">
+              <span class="text-primary font-bold text-xs">و</span>
+            </div>
+            <span class="text-white font-semibold">Wathiq</span>
+          </div>
+          <p class="text-sm text-charcoal">Sovereign compliance infrastructure for the Kingdom of Saudi Arabia.</p>
+        </div>
+        <div>
+          <h4 class="text-white font-medium text-sm mb-4">Product</h4>
+          <ul class="space-y-2">
+            <li><a href="/pricing" class="text-sm text-white-grey hover:text-white transition">Pricing</a></li>
+            <li><a href="/about" class="text-sm text-white-grey hover:text-white transition">About</a></li>
+            <li><a href="/contact" class="text-sm text-white-grey hover:text-white transition">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-medium text-sm mb-4">Compliance</h4>
+          <ul class="space-y-2">
+            <li><span class="text-sm text-white-grey">GOSI Pension</span></li>
+            <li><span class="text-sm text-white-grey">Nitaqat Saudization</span></li>
+            <li><span class="text-sm text-white-grey">WPS Wage Protection</span></li>
+            <li><span class="text-sm text-white-grey">Qiwa Contracts</span></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-medium text-sm mb-4">Legal</h4>
+          <ul class="space-y-2">
+            <li><span class="text-sm text-white-grey">Privacy Policy</span></li>
+            <li><span class="text-sm text-white-grey">Terms of Service</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-white/5 pt-8 text-center">
+        <p class="text-sm text-charcoal">©2026 Wathiq. Saudi Arabia.</p>
+      </div>
+    </div>
+  </footer>
+</Layout>

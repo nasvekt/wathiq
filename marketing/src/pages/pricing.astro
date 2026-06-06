@@ -1,0 +1,164 @@
+---
+// Pricing Page — 4 Enterprise Tiers
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Pricing — Wathiq Compliance Gateway">
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-tech-black/95 backdrop-blur-sm border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center">
+          <span class="text-primary font-bold text-sm">و</span>
+        </div>
+        <span class="text-white font-semibold text-lg">Wathiq</span>
+      </a>
+      <a href="http://localhost:8000/login" class="text-white-grey hover:text-white transition text-sm font-medium">Sign in</a>
+    </div>
+  </nav>
+
+  <section class="bg-tech-black pt-32 pb-24">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <h1 class="text-5xl md:text-6xl text-white font-onest font-normal mb-4">Enterprise Pricing</h1>
+        <p class="text-xl text-charcoal">Annual subscriptions. Annual contracts. Predictable compliance.</p>
+      </div>
+
+      <div class="grid md:grid-cols-4 gap-6">
+        <!-- Standard -->
+        <div class="bg-surface border border-white/5 rounded-2xl p-8 hover:border-primary/30 transition flex flex-col">
+          <div class="mb-6">
+            <h3 class="text-2xl text-white font-onest font-normal mb-1">Standard</h3>
+            <p class="text-sm text-charcoal">10–49 employees</p>
+          </div>
+          <div class="mb-6">
+            <span class="text-4xl font-bold text-white">SAR 14,400</span>
+            <span class="text-charcoal text-sm">/year</span>
+          </div>
+          <ul class="space-y-3 mb-8 flex-1">
+            <li class="flex items-start gap-3 text-sm text-white-grey">
+              <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              Manual CSV/Excel uploads
+            </li>
+            <li class="flex items-start gap-3 text-sm text-white-grey">
+              <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              Full Compliance Ledger
+            </li>
+            <li class="flex items-start gap-3 text-sm text-white-grey">
+              <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              GOSI + Nitaqat calculations
+            </li>
+            <li class="flex items-start gap-3 text-sm text-white-grey">
+              <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              Manual SIF export
+            </li>
+          </ul>
+          <a href="/contact" class="w-full text-center border border-white/20 hover:border-white/40 text-white font-medium text-sm px-5 py-3 rounded-lg transition">Get Started</a>
+        </div>
+
+        <!-- Professional -->
+        <div class="bg-surface border border-primary/30 rounded-2xl p-8 flex flex-col relative">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-tech-black text-xs font-bold px-4 py-1 rounded-full">Popular</div>
+          <div class="mb-6">
+            <h3 class="text-2xl text-white font-onest font-normal mb-1">Professional</h3>
+            <p class="text-sm text-charcoal">50–499 employees</p>
+          </div>
+          <div class="mb-6">
+            <span class="text-4xl font-bold text-white">SAR 42,000</span>
+            <span class="text-charcoal text-sm">/year</span>
+          </div>
+          <ul class="space-y-3 mb-8 flex-1">
+            <li class="flex items-start gap-3 text-sm text-white-grey">
+              <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              Unlimited upload records
+            </li>
+            <li class="flex items-start gap-3 text-sm text-white-grey">
+              <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              API access (1K records/call)
+            </li>
+            <li class="flex items-start gap-3 text-sm text-white-grey">
+              <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              Expatriate diversity monitoring
+            </li>
+            <li class="flex items-start gap-3 text-sm text-white-grey">
+              <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              Monthly KPI email report
+            </li>
+            <li class="flex items-start gap-3 text-sm text-white-grey">
+              <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              Developer Portal
+            </li>
+          </ul>
+          <a href="/contact" class="w-full text-center bg-primary hover:bg-primary-dark text-tech-black font-semibold text-sm px-5 py-3 rounded-lg transition">Get Started</a>
+        </div>
+
+        <!-- Enterprise -->
+        <div class="bg-surface border border-white/5 rounded-2xl p-8 hover:border-primary/30 transition flex flex-col">
+          <div class="mb-6">
+            <h3 class="text-2xl text-white font-onest font-normal mb-1">Enterprise</h3>
+            <p class="text-sm text-charcoal">500+ employees</p>
+          </div>
+          <div class="mb-6">
+            <span class="text-4xl font-bold text-white">SAR 102K+</span>
+            <span class="text-charcoal text-sm">/year</span>
+          </div>
+          <ul class="space-y-3 mb-8 flex-1">
+            <li class="flex items-start gap-3 text-sm text-white-grey">
+              <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              Unlimited API throughput
+            </li>
+            <li class="flex items-start gap-3 text-sm text-white-grey">
+              <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              H2H bank delivery (SFTP)
+            </li>
+            <li class="flex items-start gap-3 text-sm text-white-grey">
+              <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              Dedicated Saudi hosting
+            </li>
+            <li class="flex items-start gap-3 text-sm text-white-grey">
+              <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              99.99% uptime SLA
+            </li>
+          </ul>
+          <a href="/contact" class="w-full text-center border border-white/20 hover:border-white/40 text-white font-medium text-sm px-5 py-3 rounded-lg transition">Contact Sales</a>
+        </div>
+
+        <!-- Developer API -->
+        <div class="bg-surface border border-white/5 rounded-2xl p-8 hover:border-primary/30 transition flex flex-col">
+          <div class="mb-6">
+            <h3 class="text-2xl text-white font-onest font-normal mb-1">Developer API</h3>
+            <p class="text-sm text-charcoal">EOR & HRIS platforms</p>
+          </div>
+          <div class="mb-6">
+            <span class="text-4xl font-bold text-white">SAR 0.75</span>
+            <span class="text-charcoal text-sm">/record</span>
+          </div>
+          <ul class="space-y-3 mb-8 flex-1">
+            <li class="flex items-start gap-3 text-sm text-white-grey">
+              <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              Full REST API access
+            </li>
+            <li class="flex items-start gap-3 text-sm text-white-grey">
+              <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              Async batch + webhooks
+            </li>
+            <li class="flex items-start gap-3 text-sm text-white-grey">
+              <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              Sandbox environment
+            </li>
+            <li class="flex items-start gap-3 text-sm text-white-grey">
+              <svg class="w-4 h-4 text-primary mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              Min SAR 2,500/month
+            </li>
+          </ul>
+          <a href="/contact" class="w-full text-center border border-white/20 hover:border-white/40 text-white font-medium text-sm px-5 py-3 rounded-lg transition">Integrate</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-tech-black border-t border-white/5 py-12">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <p class="text-sm text-charcoal">©2026 Wathiq. Saudi Arabia.</p>
+    </div>
+  </footer>
+</Layout>
