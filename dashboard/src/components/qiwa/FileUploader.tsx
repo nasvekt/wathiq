@@ -203,7 +203,7 @@ const FileUploader: React.FC<Props> = ({ mode, onSubmit, onBack }) => {
             onDrop={handleFileDrop}
             onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
             onDragLeave={() => setDragOver(false)}
-            className={`border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition mb-4 ${
+            className={`border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition mb-6 ${
               dragOver ? 'border-primary bg-primary/5' : 'border-gray-300 hover:border-gray-400 bg-white'
             }`}
           >
@@ -214,29 +214,88 @@ const FileUploader: React.FC<Props> = ({ mode, onSubmit, onBack }) => {
             <p className="text-sm text-gray-400">{t('qiwaShield.supportedFormats')}</p>
           </div>
         ) : (
-          <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center mb-4">
-            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-green-100 flex items-center justify-center">
-              <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+          <div>
+            <div className="bg-green-50 border border-green-200 rounded-2xl p-5 text-center mb-6">
+              <p className="text-green-800 font-medium">{parsedCount} {t('qiwaShield.totalEmployees')} {t('qiwaShield.scanning')}</p>
+              <button onClick={() => { setParsedCount(0); setEmployees([]); }} className="text-sm text-primary hover:text-primary-dark mt-1 transition">
+                Upload different file
+              </button>
             </div>
-            <p className="text-green-800 font-medium mb-1">{parsedCount} employees parsed from {fileName}</p>
-            <p className="text-sm text-green-600 mb-3">Review the data below or upload a different file</p>
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="text-sm text-primary hover:text-primary-dark font-medium transition"
-            >
-              Upload different file
-            </button>
+
+            {/* Company Name */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('qiwaShield.companyName')}</label>
+              <input
+                type="text"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-lg text-sm focus:border-primary outline-none"
+                placeholder={t('qiwaShield.companyNamePlaceholder')}
+              />
+            </div>
+
+            {/* Parsed data preview */}
+            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-4">
+              <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
+                <p className="text-sm font-medium text-gray-700">{parsedCount} employees — preview</p>
+              </div>
+              <div className="overflow-x-auto max-h-64 overflow-y-auto">
+                <table className="w-full text-sm">
+                  <thead className="sticky top-0 bg-gray-50">
+                    <tr>
+                      <th className="text-left px-3 py-2 text-xs font-medium text-gray-500 uppercase">{t('qiwaShield.name')}</th>
+                      <th className="text-left px-3 py-2 text-xs font-medium text-gray-500 uppercase">IQAMA</th>
+                      <th className="text-left px-3 py-2 text-xs font-medium text-gray-500 uppercase">{t('qiwaShield.salary')}</th>
+                      <th className="text-left px-3 py-2 text-xs font-medium text-gray-500 uppercase">{t('qiwaShield.qiwaDoc')}</th>
+                      <th className="text-left px-3 py-2 text-xs font-medium text-gray-500 uppercase">GOSI</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {employees.slice(0, 50).map((emp, i) => (
+                      <tr key={i} className="border-t border-gray-100">
+                        <td className="px-3 py-2 text-gray-900">{emp.employee_name}</td>
+                        <td className="px-3 py-2 text-gray-500">{emp.iqama_number}</td>
+                        <td className="px-3 py-2 text-gray-900">SAR {emp.basic_salary?.toLocaleString()}</td>
+                        <td className="px-3 py-2">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                            emp.contract_documented_in_qiwa ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
+                          }`}>
+                            {emp.contract_documented_in_qiwa ? '✅' : '❌'}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                            emp.gosi_enrolled ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                          }`}>
+                            {emp.gosi_enrolled ? '✅' : '❌'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {employees.length > 50 && (
+                <div className="px-4 py-2 bg-gray-50 text-center text-xs text-gray-500">
+                  Showing 50 of {employees.length} employees
+                </div>
+              )}
+            </div>
           </div>
         )}
         <div className="flex items-center gap-3 mt-4">
-          <button onClick={onBack} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg transition">
+          <button onClick={onBack} className="px-5 py-2.5 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
             {t('common.back')}
           </button>
-          <button onClick={() => alert(t('qiwaShield.sampleDownloadComing'))} className="px-4 py-2 text-sm text-primary hover:text-primary-dark font-medium transition">
-            {t('qiwaShield.downloadSample')}
-          </button>
+          {parsedCount > 0 && (
+            <button
+              onClick={handleSubmit}
+              disabled={!employees.some(e => e.employee_name)}
+              className="px-6 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-dark rounded-lg transition disabled:opacity-50"
+            >
+              {t('qiwaShield.scanEmployees')} ({parsedCount})
+            </button>
+          )}
         </div>
       </div>
     );
