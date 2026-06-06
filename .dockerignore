@@ -1,0 +1,17 @@
+.git
+.gitignore
+.env
+__pycache__
+*.pyc
+.pytest_cache
+node_modules
+dashboard
+marketing
+README.md
+.cursorrules
+.hermesignore
+scripts
+supabase
+fly.toml
+render.yaml
+{backend

@@ -1,0 +1,19 @@
+# Fly.io config for Wathiq backend
+app = "wathiq-backend"
+primary_region = "fra"  # Frankfurt — closest to Saudi Arabia
+
+[build]
+  dockerfile = "backend/Dockerfile"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = false  # No cold starts — always on
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+[[vm]]
+  memory = "256mb"
+  cpu_kind = "shared"
+  cpus = 1
