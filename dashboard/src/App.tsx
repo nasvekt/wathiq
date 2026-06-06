@@ -12,6 +12,7 @@ import HealthMonitor from '@/pages/HealthMonitor';
 import Developer from '@/pages/Developer';
 import Billing from '@/pages/Billing';
 import Founder from '@/pages/Founder';
+import QiwaShield from '@/pages/QiwaShield';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -28,6 +29,7 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/onboarding" element={<Onboarding />} />
+      <Route path="/qiwa-shield" element={<QiwaShield />} />
 
       {/* Protected routes */}
       <Route

@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.routers import compliance, health, gosi, nitaqat, ingestion, sif_export
 from app.routers import frontend_auth, frontend_api, procurement
+from app.features import qiwa_shield_router
 
 # ── Frontend Paths ──
 DASHBOARD_DIST = Path(__file__).resolve().parent.parent.parent / "dashboard" / "dist"
@@ -43,6 +44,7 @@ app.include_router(sif_export.router, prefix="/api/v1", tags=["SIF Export"])
 app.include_router(frontend_auth.router, prefix="/api/auth", tags=["Frontend Auth"])
 app.include_router(frontend_api.router, prefix="/api", tags=["Frontend API"])
 app.include_router(procurement.router, prefix="/api/v1", tags=["Procurement"])
+app.include_router(qiwa_shield_router, prefix="/api/v1", tags=["Qiwa Shield"])
 
 # ── Serve static assets (JS, CSS, images) ──
 if DASHBOARD_DIST.exists():
