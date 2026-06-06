@@ -38,6 +38,7 @@ class Settings(BaseSettings):
         env_file = ".env"
         env_file_encoding = "utf-8"
         case_sensitive = False
+        extra = "allow"
 
     @property
     def cors_origins_list(self) -> list[str]:
