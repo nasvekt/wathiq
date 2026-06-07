@@ -1,21 +1,15 @@
 """
 Wathiq Compliance Gateway — FastAPI Backend
-Main application entry point.
+Resilient startup — health endpoint loads first, other routers load lazily.
 """
 
 __version__ = "0.2.0"
 
 from pathlib import Path
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from app.routers import compliance, health, gosi, nitaqat, ingestion, sif_export
-from app.routers import frontend_auth, frontend_api, procurement
-from app.features import qiwa_shield_router
-
-# ── Frontend Paths ──
-DASHBOARD_DIST = Path(__file__).resolve().parent.parent.parent / "dashboard" / "dist"
 
 app = FastAPI(
     title="Wathiq Compliance Gateway",
@@ -23,7 +17,6 @@ app = FastAPI(
     version="0.2.0",
 )
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -32,34 +25,46 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── API Routers — defined BEFORE the SPA catch-all ──
-app.include_router(health.router, tags=["System"])
-app.include_router(compliance.router, prefix="/api/v1", tags=["Compliance"])
-app.include_router(gosi.router, prefix="/api/v1", tags=["GOSI"])
-app.include_router(nitaqat.router, prefix="/api/v1", tags=["Nitaqat"])
-app.include_router(ingestion.router, prefix="/api/v1", tags=["Ingestion"])
-app.include_router(sif_export.router, prefix="/api/v1", tags=["SIF Export"])
+# ── Health endpoint — imported directly, always works ──
+from app.routers.health import router as health_router
+app.include_router(health_router, tags=["System"])
 
-# ── Frontend-facing endpoints ──
-app.include_router(frontend_auth.router, prefix="/api/auth", tags=["Frontend Auth"])
-app.include_router(frontend_api.router, prefix="/api", tags=["Frontend API"])
-app.include_router(procurement.router, prefix="/api/v1", tags=["Procurement"])
-app.include_router(qiwa_shield_router, prefix="/api/v1", tags=["Qiwa Shield"])
+# ── All other routers — imported lazily ──
+def _include_router(module_path: str, router_attr: str, prefix: str = "", tags: list | None = None):
+    """Import and include a router. Silently skip if it fails."""
+    try:
+        import importlib
+        mod = importlib.import_module(module_path)
+        router = getattr(mod, router_attr)
+        app.include_router(router, prefix=prefix, tags=tags or [])
+    except Exception as e:
+        import sys
+        print(f"[warn] Router {module_path}.{router_attr} failed to load: {e}", file=sys.stderr)
 
-# ── Serve static assets (JS, CSS, images) ──
-if DASHBOARD_DIST.exists():
+# API v1
+_include_router("app.routers.compliance", "router", "/api/v1", ["Compliance"])
+_include_router("app.routers.gosi", "router", "/api/v1", ["GOSI"])
+_include_router("app.routers.nitaqat", "router", "/api/v1", ["Nitaqat"])
+_include_router("app.routers.ingestion", "router", "/api/v1", ["Ingestion"])
+_include_router("app.routers.sif_export", "router", "/api/v1", ["SIF Export"])
+_include_router("app.routers.procurement", "router", "/api/v1", ["Procurement"])
+
+# Frontend-facing API
+_include_router("app.routers.frontend_auth", "router", "/api/auth", ["Frontend Auth"])
+_include_router("app.routers.frontend_api", "router", "/api", ["Frontend API"])
+
+# Qiwa Shield
+_include_router("app.features.qiwa_shield.router", "router", "/api/v1", ["Qiwa Shield"])
+
+# ── Frontend SPA ──
+DASHBOARD_DIST = Path(__file__).resolve().parent.parent.parent / "dashboard" / "dist"
+if DASHBOARD_DIST.exists() and (DASHBOARD_DIST / "assets").exists():
     app.mount("/assets", StaticFiles(directory=str(DASHBOARD_DIST / "assets")), name="assets")
 
-
-    # ── SPA catch-all — serve index.html for all non-API, non-static routes ──
     @app.get("/{full_path:path}", include_in_schema=False)
     async def serve_spa(full_path: str):
-        """Serve the SPA for all routes that aren't API endpoints."""
-        # Don't catch API routes
         if full_path.startswith("api/"):
-            from fastapi.responses import JSONResponse
             return JSONResponse(status_code=404, content={"detail": "Not found"})
-
         index_path = DASHBOARD_DIST / "index.html"
         if index_path.exists():
             return HTMLResponse(content=index_path.read_text())
