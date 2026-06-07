@@ -236,6 +236,7 @@ async def founder_users():
 
 
 @router.post("/seed/sample-data")
+@router.get("/seed/sample-data")
 async def seed_sample_data():
     """Seed Supabase with sample company + employee data for testing."""
     import uuid
