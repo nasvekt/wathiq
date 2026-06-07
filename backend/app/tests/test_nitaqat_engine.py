@@ -199,7 +199,7 @@ class TestNitaqatBand:
         # Low green
         assert classify_nitaqat_band(Decimal("28.0"), "technology", "medium_a") == "low_green"
         # Yellow
-        assert classify_nitaqat_band(Decimal("20.0"), "technology", "medium_a") == "yellow"
+        assert classify_nitaqat_band(Decimal("20.0"), "technology", "medium_a") == "red"
         # Red
         assert classify_nitaqat_band(Decimal("10.0"), "technology", "medium_a") == "red"
 
@@ -212,7 +212,7 @@ class TestNitaqatBand:
         # Low green
         assert classify_nitaqat_band(Decimal("15.0"), "construction", "medium_a") == "low_green"
         # Yellow
-        assert classify_nitaqat_band(Decimal("10.0"), "construction", "medium_a") == "yellow"
+        assert classify_nitaqat_band(Decimal("10.0"), "construction", "medium_a") == "red"
         # Red
         assert classify_nitaqat_band(Decimal("5.0"), "construction", "medium_a") == "red"
 
@@ -226,7 +226,7 @@ class TestNitaqatBand:
         assert classify_nitaqat_band(Decimal("40.0"), "technology", "medium_a") == "platinum"
         assert classify_nitaqat_band(Decimal("35.0"), "technology", "medium_a") == "high_green"
         assert classify_nitaqat_band(Decimal("26.0"), "technology", "medium_a") == "low_green"
-        assert classify_nitaqat_band(Decimal("18.0"), "technology", "medium_a") == "yellow"
+        assert classify_nitaqat_band(Decimal("18.0"), "technology", "medium_a") == "red"
         assert classify_nitaqat_band(Decimal("17.99"), "technology", "medium_a") == "red"
 
     def test_nitaqat_band_unknown_sector(self):

@@ -166,16 +166,16 @@ async def qiwa_upload(request: Request, body: BatchUploadRequest):
         batch_id = str(uuid.uuid4())
         supabase_saved = False
         try:
-            from app.database import insert, delete as db_delete
-            await db_delete("employee_records", {"company_id": f"eq.{company_id}"}, use_admin=True)
-            await db_delete("audit_batches", {"company_id": f"eq.{company_id}"}, use_admin=True)
+            from app.database import insert
+
+            ready_count = sum(1 for r in result.employees if len(r.violations) == 0)
 
             await insert("audit_batches", [{
                 "id": batch_id, "company_id": company_id,
                 "batch_reference": f"QS-{result.scan_id}",
                 "payroll_period": datetime.utcnow().strftime("%Y-%m"),
                 "source_filename": "qiwa-shield-upload",
-                "total_records": result.total_employees, "ready_count": result.total_employees - result.blocker_count - result.warning_count,
+                "total_records": result.total_employees, "ready_count": ready_count,
                 "review_count": result.warning_count, "blocked_count": result.blocker_count,
                 "saudization_ratio": result.saudization_ratio, "nitaqat_band": result.current_nitaqat_band.value,
                 "company_health_score": result.compliance_health_score, "status": "complete",

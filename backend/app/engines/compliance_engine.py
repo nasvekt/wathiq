@@ -34,6 +34,7 @@ from app.engines.iqama_engine import check_iqama_expiry
 from app.engines.engineer_wage_engine import check_engineer_wage_floor
 from app.engines.contract_engine import check_contract_window
 from app.engines.penalty_engine import calculate_health_score, calculate_penalty_exposure
+from app.engines.diversity_engine import check_diversity_cap
 
 
 def _is_saudi(nationality: str) -> bool:
@@ -201,12 +202,10 @@ def validate_batch(
     iqama_expiring_30 = sum(1 for r in results if "IQAMA_EXPIRING_30D" in r.flags)
     iqama_expired = sum(1 for r in results if "IQAMA_EXPIRED" in r.flags)
 
-    yellow_band = nitaqat_band == "yellow"
     red_band = nitaqat_band == "red"
     health = calculate_health_score(
         blocked_count=blocked_count,
         review_count=review_count,
-        yellow_band=yellow_band,
         red_band=red_band,
         iqama_expiring_30_days=iqama_expiring_30,
         iqama_expired=iqama_expired,
@@ -230,11 +229,13 @@ def validate_batch(
             nitaqat_band=nitaqat_band,
             total_gosi_liability=total_gosi.quantize(Decimal("0.01")),
             expat_diversity={
-                "total_expatriates": sum(
-                    1 for e in employees if not _is_saudi(e.nationality)
-                ),
-                "exceeded_cap": False,
-                "warning_nationalities": [],
+                **check_diversity_cap([
+                    {
+                        "nationality": e.nationality,
+                        "is_saudi": _is_saudi(e.nationality),
+                    }
+                    for e in employees
+                ]),
             },
         ),
         records=results,

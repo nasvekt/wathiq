@@ -82,29 +82,29 @@ def classify_nitaqat_band(
     # Structure: {sector_code: {size_category: {band: min_pct}}}
     DEFAULT_MATRIX = {
         "technology": {
-            "medium_a": {"platinum": 40, "high_green": 35, "low_green": 26, "yellow": 18},
-            "medium_b": {"platinum": 40, "high_green": 35, "low_green": 26, "yellow": 18},
-            "large": {"platinum": 40, "high_green": 35, "low_green": 26, "yellow": 18},
+            "medium_a": {"platinum": 40, "high_green": 35, "low_green": 26},
+            "medium_b": {"platinum": 40, "high_green": 35, "low_green": 26},
+            "large": {"platinum": 40, "high_green": 35, "low_green": 26},
         },
         "construction": {
-            "medium_a": {"platinum": 25, "high_green": 20, "low_green": 13, "yellow": 8},
-            "medium_b": {"platinum": 25, "high_green": 20, "low_green": 13, "yellow": 8},
-            "large": {"platinum": 25, "high_green": 20, "low_green": 13, "yellow": 8},
+            "medium_a": {"platinum": 25, "high_green": 20, "low_green": 13},
+            "medium_b": {"platinum": 25, "high_green": 20, "low_green": 13},
+            "large": {"platinum": 25, "high_green": 20, "low_green": 13},
         },
         "wholesale_retail": {
-            "medium_a": {"platinum": 35, "high_green": 30, "low_green": 23, "yellow": 15},
-            "medium_b": {"platinum": 35, "high_green": 30, "low_green": 23, "yellow": 15},
-            "large": {"platinum": 35, "high_green": 30, "low_green": 23, "yellow": 15},
+            "medium_a": {"platinum": 35, "high_green": 30, "low_green": 23},
+            "medium_b": {"platinum": 35, "high_green": 30, "low_green": 23},
+            "large": {"platinum": 35, "high_green": 30, "low_green": 23},
         },
         "logistics": {
-            "medium_a": {"platinum": 30, "high_green": 25, "low_green": 17, "yellow": 10},
-            "medium_b": {"platinum": 30, "high_green": 25, "low_green": 17, "yellow": 10},
-            "large": {"platinum": 30, "high_green": 25, "low_green": 17, "yellow": 10},
+            "medium_a": {"platinum": 30, "high_green": 25, "low_green": 17},
+            "medium_b": {"platinum": 30, "high_green": 25, "low_green": 17},
+            "large": {"platinum": 30, "high_green": 25, "low_green": 17},
         },
         "travel_tourism": {
-            "medium_a": {"platinum": 35, "high_green": 29, "low_green": 19, "yellow": 12},
-            "medium_b": {"platinum": 35, "high_green": 29, "low_green": 19, "yellow": 12},
-            "large": {"platinum": 35, "high_green": 29, "low_green": 19, "yellow": 12},
+            "medium_a": {"platinum": 35, "high_green": 29, "low_green": 19},
+            "medium_b": {"platinum": 35, "high_green": 29, "low_green": 19},
+            "large": {"platinum": 35, "high_green": 29, "low_green": 19},
         },
     }
 
@@ -114,7 +114,7 @@ def classify_nitaqat_band(
 
     if not thresholds:
         # Default conservative thresholds if sector/size not found
-        thresholds = {"platinum": 40, "high_green": 35, "low_green": 25, "yellow": 15}
+        thresholds = {"platinum": 40, "high_green": 35, "low_green": 25}
 
     if saudization_ratio >= thresholds.get("platinum", 40):
         return "platinum"
@@ -122,8 +122,6 @@ def classify_nitaqat_band(
         return "high_green"
     elif saudization_ratio >= thresholds.get("low_green", 25):
         return "low_green"
-    elif saudization_ratio >= thresholds.get("yellow", 15):
-        return "yellow"
     else:
         return "red"
 

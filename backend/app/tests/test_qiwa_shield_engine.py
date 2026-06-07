@@ -106,17 +106,17 @@ class TestNitaqatWeight:
 
     def test_saudi_half_weight(self):
         """Saudi earning 3000-3999 gets 0.5."""
-        emp = make_emp(total_gross_wage=Decimal("3500"))
+        emp = make_emp(total_gross_wage=Decimal("3500"), monthly_hours=0)
         assert _calculate_nitaqat_weight(emp) == 0.5
 
     def test_saudi_half_weight_lower_boundary(self):
         """Saudi earning exactly 3000 gets 0.5."""
-        emp = make_emp(total_gross_wage=Decimal("3000"))
+        emp = make_emp(total_gross_wage=Decimal("3000"), monthly_hours=0)
         assert _calculate_nitaqat_weight(emp) == 0.5
 
     def test_saudi_half_weight_upper_boundary(self):
         """Saudi earning exactly 3999 gets 0.5."""
-        emp = make_emp(total_gross_wage=Decimal("3999"))
+        emp = make_emp(total_gross_wage=Decimal("3999"), monthly_hours=0)
         assert _calculate_nitaqat_weight(emp) == 0.5
 
     def test_saudi_below_3000_zero(self):

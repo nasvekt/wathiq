@@ -65,12 +65,12 @@ def calculate_procurement_saudization(
         # Calculate Nitaqat weight
         if not is_saudi:
             weight = Decimal("0.0")
+        elif monthly_hours and monthly_hours >= 160:
+            weight = Decimal("1.0")
         elif total_gross >= Decimal("4000"):
             weight = Decimal("1.0")
         elif total_gross >= Decimal("3000"):
             weight = Decimal("0.5")
-        elif monthly_hours and monthly_hours >= 160:
-            weight = Decimal("1.0")
         else:
             weight = Decimal("0.0")
 

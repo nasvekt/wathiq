@@ -22,36 +22,27 @@ export default function Dashboard() {
     );
   }
 
-  if (error) {
+  if (error || !data) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <p className="text-status-blocked text-sm mb-2">{t('common.error')}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="text-primary text-sm hover:underline"
-          >
-            {t('common.retry')}
-          </button>
+      <div className="flex flex-col items-center justify-center h-64 text-center">
+        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+          <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+          </svg>
         </div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('dashboard.emptyTitle')}</h3>
+        <p className="text-sm text-gray-500 max-w-sm mb-6">{t('dashboard.emptyDescription')}</p>
+        <a
+          href="/qiwa-shield"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-primary-dark transition"
+        >
+          {t('dashboard.startFreeAudit')}
+        </a>
       </div>
     );
   }
 
-  const dashboard = data ?? {
-    health_score: 78,
-    previous_health_score: 72,
-    nitaqat_band: 'high_green' as NitaqatBand,
-    nitaqat_percentage: 14.5,
-    total_records: 1842,
-    ready_count: 1423,
-    review_count: 267,
-    blocked_count: 89,
-    at_risk_count: 63,
-    penalty_exposure: 187500,
-    saudi_count: 245,
-    expat_count: 1597,
-  };
+  const dashboard = data;
 
   return (
     <div className="space-y-6 animate-slide-in">

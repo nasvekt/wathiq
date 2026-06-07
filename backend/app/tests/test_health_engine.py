@@ -5,7 +5,6 @@ Tests cover:
 - Perfect score (100)
 - Blocked records penalty (-20 each)
 - Review records penalty (-5 each)
-- Yellow band penalty (-10)
 - Red band penalty (-25)
 - Iqama expiring penalty (-5 each)
 - Iqama expired penalty (-10 each)
@@ -29,7 +28,6 @@ class TestHealthScore:
         result = calculate_health_score(
             blocked_count=0,
             review_count=0,
-            yellow_band=False,
             red_band=False,
             iqama_expiring_30_days=0,
             iqama_expired=0,
@@ -43,7 +41,6 @@ class TestHealthScore:
         result = calculate_health_score(
             blocked_count=2,
             review_count=0,
-            yellow_band=False,
             red_band=False,
             iqama_expiring_30_days=0,
             iqama_expired=0,
@@ -56,7 +53,6 @@ class TestHealthScore:
         result = calculate_health_score(
             blocked_count=0,
             review_count=4,
-            yellow_band=False,
             red_band=False,
             iqama_expiring_30_days=0,
             iqama_expired=0,
@@ -64,26 +60,11 @@ class TestHealthScore:
         assert result["score"] == 80
         assert result["deductions"]["review_records"] == 20
 
-    def test_score_yellow_band(self):
-        """Yellow band deducts 10 points."""
-        result = calculate_health_score(
-            blocked_count=0,
-            review_count=0,
-            yellow_band=True,
-            red_band=False,
-            iqama_expiring_30_days=0,
-            iqama_expired=0,
-        )
-        assert result["score"] == 90
-        assert result["color"] == "green"
-        assert result["deductions"]["yellow_band"] == 10
-
     def test_score_red_band(self):
         """Red band deducts 25 points."""
         result = calculate_health_score(
             blocked_count=0,
             review_count=0,
-            yellow_band=False,
             red_band=True,
             iqama_expiring_30_days=0,
             iqama_expired=0,
@@ -97,7 +78,6 @@ class TestHealthScore:
         result = calculate_health_score(
             blocked_count=0,
             review_count=0,
-            yellow_band=False,
             red_band=False,
             iqama_expiring_30_days=3,
             iqama_expired=0,
@@ -110,7 +90,6 @@ class TestHealthScore:
         result = calculate_health_score(
             blocked_count=0,
             review_count=0,
-            yellow_band=False,
             red_band=False,
             iqama_expiring_30_days=0,
             iqama_expired=2,
@@ -123,7 +102,6 @@ class TestHealthScore:
         result = calculate_health_score(
             blocked_count=10,
             review_count=10,
-            yellow_band=True,
             red_band=True,
             iqama_expiring_30_days=10,
             iqama_expired=10,
@@ -136,21 +114,19 @@ class TestHealthScore:
         result = calculate_health_score(
             blocked_count=1,  # -20
             review_count=2,  # -10
-            yellow_band=True,  # -10
             red_band=False,
             iqama_expiring_30_days=1,  # -5
             iqama_expired=1,  # -10
         )
-        # 100 - 20 - 10 - 10 - 5 - 10 = 45
-        assert result["score"] == 45
+        # 100 - 20 - 10 - 5 - 10 = 55
+        assert result["score"] == 55
         assert result["color"] == "red"
 
-    def test_score_yellow_band_boundary(self):
+    def test_score_red_band_boundary(self):
         """Score exactly 70 → yellow."""
         result = calculate_health_score(
             blocked_count=0,
             review_count=0,
-            yellow_band=False,
             red_band=True,  # -25
             iqama_expiring_30_days=1,  # -5
             iqama_expired=0,
@@ -164,7 +140,6 @@ class TestHealthScore:
         result = calculate_health_score(
             blocked_count=0,
             review_count=0,
-            yellow_band=False,
             red_band=True,  # -25
             iqama_expiring_30_days=2,  # -10
             iqama_expired=0,
@@ -178,20 +153,18 @@ class TestHealthScore:
         result = calculate_health_score(
             blocked_count=0,
             review_count=0,
-            yellow_band=True,  # -10
             red_band=False,
             iqama_expiring_30_days=0,
             iqama_expired=0,
         )
-        assert result["score"] == 90
+        assert result["score"] == 100
         assert result["color"] == "green"
 
     def test_score_just_below_green(self):
         """Score 89 → yellow."""
         result = calculate_health_score(
             blocked_count=0,
-            review_count=0,
-            yellow_band=True,  # -10
+            review_count=2,  # -10
             red_band=False,
             iqama_expiring_30_days=1,  # -5
             iqama_expired=0,
@@ -205,7 +178,6 @@ class TestHealthScore:
         result = calculate_health_score(
             blocked_count=1,
             review_count=1,
-            yellow_band=True,
             red_band=True,
             iqama_expiring_30_days=1,
             iqama_expired=1,

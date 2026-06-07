@@ -12,7 +12,6 @@ from app.engines.rules_fetcher import get_rule
 def calculate_health_score(
     blocked_count: int,
     review_count: int,
-    yellow_band: bool,
     red_band: bool,
     iqama_expiring_30_days: int,
     iqama_expired: int,
@@ -23,7 +22,6 @@ def calculate_health_score(
     Start at 100. Subtract:
     - 20 per Blocked record
     - 5 per Review record
-    - 10 if in Yellow band
     - 25 if in Red band
     - 5 per Iqama expiring within 30 days
     - 10 per expired Iqama
@@ -32,8 +30,6 @@ def calculate_health_score(
     score = 100
     score -= blocked_count * 20
     score -= review_count * 5
-    if yellow_band:
-        score -= 10
     if red_band:
         score -= 25
     score -= iqama_expiring_30_days * 5
@@ -55,7 +51,7 @@ def calculate_health_score(
         "deductions": {
             "blocked_records": blocked_count * 20,
             "review_records": review_count * 5,
-            "yellow_band": 10 if yellow_band else 0,
+            "yellow_band": 0,
             "red_band": 25 if red_band else 0,
             "iqama_expiring_30d": iqama_expiring_30_days * 5,
             "iqama_expired": iqama_expired * 10,

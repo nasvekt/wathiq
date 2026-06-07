@@ -200,12 +200,12 @@ def _calculate_nitaqat_weight(emp: EmployeeRecord) -> float:
         return 0.0
     if not emp.contract_documented_in_qiwa or not emp.gosi_enrolled:
         return 0.0
+    if emp.monthly_hours >= 160:
+        return 1.0
     if emp.total_gross_wage >= Decimal("4000"):
         return 1.0
-    elif emp.total_gross_wage >= Decimal("3000"):
+    if Decimal("3000") <= emp.total_gross_wage < Decimal("4000"):
         return 0.5
-    elif emp.monthly_hours >= 160:
-        return 1.0
     return 0.0
 
 

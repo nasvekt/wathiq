@@ -38,7 +38,6 @@ class NitaqatBand(str, enum.Enum):
     PLATINUM = "platinum"
     HIGH_GREEN = "high_green"
     LOW_GREEN = "low_green"
-    YELLOW = "yellow"
     RED = "red"
 
 class PlanTier(str, enum.Enum):

@@ -29,7 +29,6 @@ class NitaqatBand(str, Enum):
     PLATINUM = "platinum"
     HIGH_GREEN = "high_green"
     LOW_GREEN = "low_green"
-    YELLOW = "yellow"
     RED = "red"
 
 
