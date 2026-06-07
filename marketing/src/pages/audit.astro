@@ -1,0 +1,107 @@
+---
+// Free Compliance Rescue Audit — Campaign Landing Page
+// "Qiwa balance disappeared? Fix it before you drop to Red."
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Free Compliance Rescue Audit — Wathiq">
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-tech-black/95 backdrop-blur-sm border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center"><span class="text-primary font-bold text-sm">و</span></div>
+        <span class="text-white font-semibold text-lg">Wathiq</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="bg-tech-black pt-32 pb-16 relative overflow-hidden">
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-red-500/5 rounded-full blur-3xl"></div>
+    <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+      <div class="inline-flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full text-red-400 text-sm font-medium mb-6">
+        <span class="w-2 h-2 bg-red-400 rounded-full animate-pulse"></span>
+        Deadline: June 30, 2026 — 23 Days Left
+      </div>
+      <h1 class="text-5xl md:text-7xl font-onest font-normal text-white leading-tight mb-6">
+        Your Qiwa Balance <span class="text-red-400">Disappeared?</span>
+      </h1>
+      <p class="text-xl md:text-2xl text-charcoal font-onest max-w-3xl mx-auto mb-8">
+        Don't drop to Red. We'll scan your workforce for <strong class="text-white">free</strong> 
+        and show you exactly which contracts are undocumented, which employees are at risk, 
+        and how to fix it before the June 30 deadline.
+      </p>
+      <a href="https://wathiq-delta.vercel.app/qiwa-shield" class="inline-block bg-primary hover:bg-primary-dark text-tech-black font-semibold text-lg px-10 py-5 rounded-xl transition shadow-lg shadow-primary/20">
+        Start Free Audit →
+      </a>
+      <p class="text-sm text-charcoal mt-4">No credit card. No signup required. Takes 2 minutes.</p>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="bg-tech-black border-t border-white/5 py-20">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-3xl md:text-4xl text-white font-onest font-normal text-center mb-14">How It Works</h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary">1</div>
+          <h3 class="text-xl text-white font-onest font-normal mb-3">Upload Your Payroll</h3>
+          <p class="text-charcoal leading-relaxed">Export your employee list from any HR system as CSV or Excel. Drag and drop it onto our secure scanner.</p>
+        </div>
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary">2</div>
+          <h3 class="text-xl text-white font-onest font-normal mb-3">AI Scans Everything</h3>
+          <p class="text-charcoal leading-relaxed">Our engine checks every Saudi employee against Qiwa documentation requirements, Nitaqat rules, GOSI enrollment, and the 90-day runaway flag.</p>
+        </div>
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary">3</div>
+          <h3 class="text-xl text-white font-onest font-normal mb-3">Get Your Rescue Plan</h3>
+          <p class="text-charcoal leading-relaxed">Download a prioritized action plan showing exactly which contracts need documenting, how to fix your Nitaqat band, and estimated penalty savings.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- URGENCY -->
+  <section class="bg-tech-black border-t border-white/5 py-20">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      <div class="bg-red-500/5 border border-red-500/20 rounded-3xl p-10 md:p-14">
+        <h2 class="text-3xl md:text-4xl text-white font-onest font-normal mb-6">23 Days to June 30</h2>
+        <p class="text-lg text-charcoal mb-8 max-w-2xl mx-auto leading-relaxed">
+          After June 30, undocumented Saudi employees count as <strong class="text-white">zero</strong> for Saudization credit. 
+          One undocumented employee can drop your Nitaqat band. A dropped band means <strong class="text-red-400">no visas, no renewals, no transfers</strong>.
+        </p>
+        <div class="grid md:grid-cols-3 gap-6 mb-8">
+          <div class="bg-tech-black rounded-xl p-6 border border-white/5">
+            <p class="text-3xl font-bold text-red-400 mb-1">90%</p>
+            <p class="text-sm text-charcoal">Contracts must be documented</p>
+          </div>
+          <div class="bg-tech-black rounded-xl p-6 border border-white/5">
+            <p class="text-3xl font-bold text-red-400 mb-1">70%</p>
+            <p class="text-sm text-charcoal">Procurement Saudization required</p>
+          </div>
+          <div class="bg-tech-black rounded-xl p-6 border border-white/5">
+            <p class="text-3xl font-bold text-red-400 mb-1">0</p>
+            <p class="text-sm text-charcoal">Grace period — enforcements now</p>
+          </div>
+        </div>
+        <a href="/audit-start" class="inline-block bg-primary hover:bg-primary-dark text-tech-black font-semibold text-lg px-10 py-5 rounded-xl transition">
+          Start Free Audit — 2 Minutes
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CUSTOMERS -->
+  <section class="bg-tech-black border-t border-white/5 py-16">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <p class="text-xs text-charcoal uppercase tracking-widest mb-2">Who Needs This Right Now</p>
+      <p class="text-lg text-white/60">Construction, logistics, retail, and engineering firms with 10-5,000 employees</p>
+    </div>
+  </section>
+
+  <footer class="bg-tech-black border-t border-white/5 py-12">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <p class="text-sm text-charcoal">©2026 Wathiq. Compliance infrastructure for Saudi Arabia.</p>
+    </div>
+  </footer>
+</Layout>

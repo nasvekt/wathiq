@@ -13,6 +13,7 @@ import Developer from '@/pages/Developer';
 import Billing from '@/pages/Billing';
 import Founder from '@/pages/Founder';
 import QiwaShield from '@/pages/QiwaShield';
+import AuditCampaign from '@/pages/AuditCampaign';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -30,6 +31,7 @@ export default function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/qiwa-shield" element={<QiwaShield />} />
+      <Route path="/audit" element={<AuditCampaign />} />
 
       {/* Protected routes */}
       <Route

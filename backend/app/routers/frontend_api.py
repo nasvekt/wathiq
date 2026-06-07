@@ -34,7 +34,7 @@ async def dashboard():
         batches = await select("audit_batches", {
             "order": "created_at.desc",
             "limit": "1",
-        })
+        }, use_admin=True)
     except Exception:
         batches = []
 
@@ -91,7 +91,7 @@ async def employees(
         params = {"limit": str(page_size), "offset": str((page - 1) * page_size)}
         if status:
             params["compliance_status"] = f"eq.{status}"
-        results = await select("employee_records", params)
+        results = await select("employee_records", params, use_admin=True)
     except Exception:
         results = []
 
@@ -299,6 +299,13 @@ async def seed_sample_data():
         {"employee_name": "John Smith", "iqama_number": "6079803142", "nationality": "India", "basic_salary": 3500, "total_gross_wage": 4200, "raw_job_title": "Laborer", "ssco_code": "9333", "compliance_status": "ready", "gosi_enrolled": True},
         {"employee_name": "Ali Hassan", "iqama_number": "7080914253", "nationality": "Egypt", "basic_salary": 3200, "total_gross_wage": 3800, "raw_job_title": "Driver", "ssco_code": "9333", "compliance_status": "ready", "gosi_enrolled": True},
     ]
+
+    # Create sample employees (always re-create for fresh seed)
+    try:
+        # Delete existing employees for this company
+        await delete("employee_records", {"company_id": f"eq.{company_id}"}, use_admin=True)
+    except Exception:
+        pass
 
     created = 0
     for emp in employees:
