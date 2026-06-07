@@ -10,12 +10,16 @@ const api: AxiosInstance = axios.create({
   },
 });
 
-// Request interceptor to attach auth token
+// Request interceptor: attach auth token + company_id
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('wathiq_token');
+    const companyId = localStorage.getItem('wathiq_company_id');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    if (companyId) {
+      config.headers['X-Company-ID'] = companyId;
     }
     return config;
   },

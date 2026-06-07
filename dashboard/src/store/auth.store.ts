@@ -19,11 +19,13 @@ export const useAuthStore = create<AuthState>((set) => ({
   isLoading: false,
   setAuth: (user, token) => {
     localStorage.setItem('wathiq_token', token);
+    localStorage.setItem('wathiq_company_id', user.company_id);
     set({ user, token, isAuthenticated: true });
   },
   setUser: (user) => set({ user }),
   logout: () => {
     localStorage.removeItem('wathiq_token');
+    localStorage.removeItem('wathiq_company_id');
     set({ user: null, token: null, isAuthenticated: false });
   },
   setLoading: (loading) => set({ isLoading: loading }),

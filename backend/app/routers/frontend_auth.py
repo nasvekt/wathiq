@@ -1,6 +1,6 @@
 """
-Wathiq — Supabase Auth integration.
-Registers users via Supabase Auth and creates company records.
+Wathiq — Auth with real company lookup from Supabase.
+Registers companies, returns consistent company_id.
 """
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
@@ -25,15 +25,27 @@ class LoginRequest(BaseModel):
 
 @router.post("/login")
 async def login(request: LoginRequest):
-    """Authenticate user — returns dev token for now (Supabase Auth Phase 2)."""
+    """Login — looks up company by email in Supabase or returns dev data."""
+    company_id = str(uuid.uuid4())
+    company_name = request.email.split("@")[0]
+
+    # Try to find existing company by email
+    try:
+        existing = await select("companies", {"email": f"eq.{request.email}"}, use_admin=True)
+        if existing:
+            company_id = existing[0]["id"]
+            company_name = existing[0].get("name", company_name)
+    except Exception:
+        pass
+
     return {
         "success": True,
-        "token": f"wathiq_dev_token_{uuid.uuid4().hex}",
+        "token": f"wathiq_{company_id}_{uuid.uuid4().hex[:8]}",
         "user": {
             "id": str(uuid.uuid4()),
             "email": request.email,
-            "name": request.email.split("@")[0],
-            "company_id": str(uuid.uuid4()),
+            "name": company_name,
+            "company_id": company_id,
             "plan_tier": "free",
         },
     }
@@ -41,42 +53,38 @@ async def login(request: LoginRequest):
 
 @router.post("/register")
 async def register(request: RegisterRequest):
-    """Register a new company — creates company record in Supabase."""
-    company = None
-    user_id = str(uuid.uuid4())
+    """Register a new company in Supabase."""
     company_id = str(uuid.uuid4())
+    company_data = {
+        "id": company_id,
+        "name": request.company_name,
+        "name_ar": request.company_name,
+        "commercial_registration": f"CR-{uuid.uuid4().hex[:8].upper()}",
+        "email": request.email,
+        "economic_sector_code": request.industry,
+        "establishment_size_category": request.company_size,
+        "total_headcount": 0,
+        "plan_tier": "free",
+        "is_active": True,
+        "onboarding_complete": False,
+    }
 
     try:
-        company = {
-            "id": company_id,
-            "name": request.company_name,
-            "name_ar": request.company_name,
-            "commercial_registration": f"CR-{uuid.uuid4().hex[:8].upper()}",
-            "email": request.email,
-            "economic_sector_code": request.industry,
-            "establishment_size_category": request.company_size,
-            "total_headcount": 0,
-            "plan_tier": "free",
-            "is_active": True,
-            "onboarding_complete": False,
-        }
-        result = await insert("companies", company, use_admin=True)
-        if not result:
-            company = None
+        await insert("companies", company_data, use_admin=True)
     except Exception:
-        pass  # Supabase might not be active — use local data
+        pass  # Continue even if Supabase write fails — use local data
 
     return {
         "success": True,
-        "token": f"wathiq_dev_token_{uuid.uuid4().hex}",
+        "token": f"wathiq_{company_id}_{uuid.uuid4().hex[:8]}",
         "user": {
-            "id": user_id,
+            "id": str(uuid.uuid4()),
             "email": request.email,
             "name": request.company_name,
             "company_id": company_id,
             "plan_tier": "free",
         },
-        "company": company or {
+        "company": {
             "id": company_id,
             "name": request.company_name,
             "sector": request.industry,
@@ -88,7 +96,7 @@ async def register(request: RegisterRequest):
 
 @router.get("/me")
 async def get_current_user():
-    """Get current user profile from token."""
+    """Dev: returns a fixed test user."""
     return {
         "id": "dev-user-001",
         "email": "dev@wathiq.io",
