@@ -290,7 +290,7 @@ const FileUploader: React.FC<Props> = ({ mode, onSubmit, onBack }) => {
           {parsedCount > 0 && (
             <button
               onClick={handleSubmit}
-              disabled={!employees.some(e => e.employee_name)}
+              disabled={parsedCount === 0}
               className="px-6 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-dark rounded-lg transition disabled:opacity-50"
             >
               {t('qiwaShield.scanEmployees')} ({parsedCount})
@@ -408,7 +408,7 @@ const FileUploader: React.FC<Props> = ({ mode, onSubmit, onBack }) => {
         </button>
         <button
           onClick={handleSubmit}
-          disabled={!employees.some(e => e.employee_name)}
+          disabled={employees.length === 0}
           className="px-6 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-dark rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {t('qiwaShield.scanEmployees')}

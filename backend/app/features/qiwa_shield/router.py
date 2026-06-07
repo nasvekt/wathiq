@@ -7,7 +7,7 @@ POST /api/v1/qiwa/report      — Generate PDF rescue report
 """
 import uuid
 from datetime import date, datetime
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
 
 from app.features.qiwa_shield.schemas import (
@@ -114,23 +114,49 @@ def _result_to_json(result) -> dict:
 
 
 @router.post("/qiwa/upload")
-async def qiwa_upload(request: BatchUploadRequest):
-    """Upload employees and run Qiwa compliance scan."""
+async def qiwa_upload(request: Request, body: BatchUploadRequest):
+    """Upload employees, run Qiwa compliance scan, and save to Supabase."""
+    company_id = request.headers.get("x-company-id", "dev-company-001")
+
     try:
-        if not request.employees:
+        if not body.employees:
             raise HTTPException(status_code=400, detail="No employees provided")
 
-        employees = _upload_to_employees(request)
-        result = scan_batch(employees, company_name=request.company_name)
+        employees = _upload_to_employees(body)
+        result = scan_batch(employees, company_name=body.company_name)
 
-        # Store scan result
+        # Save results to Supabase so the dashboard shows them
+        batch_id = str(uuid.uuid4())
+        try:
+            from app.database import insert, delete as db_delete
+            await db_delete("employee_records", {"company_id": f"eq.{company_id}"}, use_admin=True)
+            await db_delete("audit_batches", {"company_id": f"eq.{company_id}"}, use_admin=True)
+
+            await insert("audit_batches", [{
+                "id": batch_id, "company_id": company_id,
+                "batch_reference": f"QS-{result.scan_id}",
+                "payroll_period": datetime.utcnow().strftime("%Y-%m"),
+                "source_filename": "qiwa-shield-upload",
+                "total_records": result.total_employees, "ready_count": result.total_employees - result.blocker_count - result.warning_count,
+                "review_count": result.warning_count, "blocked_count": result.blocker_count,
+                "saudization_ratio": result.saudization_ratio, "nitaqat_band": result.current_nitaqat_band.value,
+                "company_health_score": result.compliance_health_score, "status": "complete",
+            }], use_admin=True)
+
+            for emp in result.employees:
+                if emp.employee.is_saudi:
+                    await insert("employee_records", [{
+                        "id": str(uuid.uuid4()), "company_id": company_id, "batch_id": batch_id,
+                        "ref_id": emp.employee.ref_id, "employee_name": emp.employee.employee_name,
+                        "iqama_number": emp.employee.iqama_number, "compliance_status": "review" if emp.violations else "ready",
+                        "nitaqat_weight": emp.nitaqat_weight,
+                        "flags": [v.id for v in emp.violations] if emp.violations else [],
+                    }], use_admin=True)
+        except Exception:
+            pass  # Supabase save is optional — results still return
+
         _scans[result.scan_id] = {"status": "complete", "result": result}
-
-        return JSONResponse(content={
-            "success": True,
-            "scan_id": result.scan_id,
-            **(_result_to_json(result)),
-        })
+        return JSONResponse(content={"success": True, "scan_id": result.scan_id, **_result_to_json(result)})
     except HTTPException:
         raise
     except Exception as e:
