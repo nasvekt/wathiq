@@ -1,6 +1,6 @@
 import api from './api';
 
-const API = '/api/v1';
+const API = '/v1';
 
 export const qiwaApi = {
   upload: (data: {
