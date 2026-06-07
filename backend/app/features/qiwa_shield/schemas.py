@@ -2,7 +2,6 @@
 Qiwa Shield — Pydantic request/response schemas.
 """
 from datetime import date
-from decimal import Decimal
 from typing import Optional
 from pydantic import BaseModel, Field
 

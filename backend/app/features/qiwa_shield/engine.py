@@ -24,7 +24,6 @@ class NitaqatBand(str, Enum):
     PLATINUM = "platinum"
     HIGH_GREEN = "high_green"
     LOW_GREEN = "low_green"
-    YELLOW = "yellow"
     RED = "red"
 
 
@@ -211,15 +210,13 @@ def _calculate_nitaqat_weight(emp: EmployeeRecord) -> float:
 
 
 def _classify_nitaqat_band(ratio: float) -> NitaqatBand:
-    """Classify Nitaqat band from ratio. Post-2026 overhaul (no Yellow -> direct Red)."""
+    """Classify Nitaqat band from ratio. Post-2026 overhaul: Yellow eliminated, direct Red."""
     if ratio >= 40:
         return NitaqatBand.PLATINUM
     elif ratio >= 35:
         return NitaqatBand.HIGH_GREEN
     elif ratio >= 26:
         return NitaqatBand.LOW_GREEN
-    elif ratio >= 18:
-        return NitaqatBand.YELLOW
     return NitaqatBand.RED
 
 
@@ -232,6 +229,8 @@ def _calculate_health_score(
     band: NitaqatBand,
 ) -> int:
     """Calculate compliance health score 0-100."""
+    if total == 0:
+        return 100  # No employees, no violations
     score = 100
     doc_pct = (documented / total * 100) if total > 0 else 0
     # Deductions
@@ -391,8 +390,8 @@ def simulate_nitaqat(
         "current_band": current_batch.current_nitaqat_band.value,
         "projected_ratio": round(projected_ratio, 1),
         "projected_band": projected_band.value,
-        "improvement": projected_priority > current_priority,
-        "worsens": projected_priority < current_priority,
+        "improvement": projected_priority < current_priority,
+        "worsens": projected_priority > current_priority,
         "band_delta": projected_priority - current_priority,
         "health_score_impact": 5 * add_saudi if add_saudi_documented else 0,
         "new_saudi_hires": add_saudi,

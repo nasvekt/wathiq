@@ -2,11 +2,16 @@
 Qiwa Shield — API endpoints.
 POST /api/v1/qiwa/upload      — Upload and scan
 GET  /api/v1/qiwa/status/{id} — Scan status
+GET  /api/v1/qiwa/batch/{batch_id} — Load batch from Supabase
 POST /api/v1/qiwa/simulate    — Nitaqat what-if
 POST /api/v1/qiwa/report      — Generate PDF rescue report
 """
+import logging
+import os
+import pickle
 import uuid
 from datetime import date, datetime
+from decimal import Decimal
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
 
@@ -21,10 +26,42 @@ from app.features.qiwa_shield.engine import (
     simulate_nitaqat,
 )
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
-# In-memory scan store (replace with Redis/DB in production)
+# File-backed scan store — persists across restarts (pickle preserves BatchScanResult objects)
+_SCAN_CACHE_DIR = os.path.join(os.path.dirname(__file__), ".scan_cache")
+os.makedirs(_SCAN_CACHE_DIR, exist_ok=True)
+
 _scans: dict[str, dict] = {}
+
+
+def _load_persisted_scans():
+    """Reload scan results from disk cache on startup."""
+    if not os.path.isdir(_SCAN_CACHE_DIR):
+        return
+    for fname in os.listdir(_SCAN_CACHE_DIR):
+        if fname.endswith(".pkl"):
+            try:
+                with open(os.path.join(_SCAN_CACHE_DIR, fname), "rb") as f:
+                    result = pickle.load(f)
+                _scans[result.scan_id] = {"status": "complete", "result": result}
+            except Exception:
+                pass
+
+
+def _persist_scan(scan_id: str, result):
+    """Write scan result to disk so it survives restart."""
+    try:
+        path = os.path.join(_SCAN_CACHE_DIR, f"{scan_id}.pkl")
+        with open(path, "wb") as f:
+            pickle.dump(result, f)
+    except Exception:
+        logger.warning("Failed to persist scan %s to disk", scan_id)
+
+
+# Load any persisted scans on module import
+_load_persisted_scans()
 
 
 def _upload_to_employees(req: BatchUploadRequest) -> list[EmployeeRecord]:
@@ -127,6 +164,7 @@ async def qiwa_upload(request: Request, body: BatchUploadRequest):
 
         # Save results to Supabase so the dashboard shows them
         batch_id = str(uuid.uuid4())
+        supabase_saved = False
         try:
             from app.database import insert, delete as db_delete
             await db_delete("employee_records", {"company_id": f"eq.{company_id}"}, use_admin=True)
@@ -152,11 +190,17 @@ async def qiwa_upload(request: Request, body: BatchUploadRequest):
                         "nitaqat_weight": emp.nitaqat_weight,
                         "flags": [v.id for v in emp.violations] if emp.violations else [],
                     }], use_admin=True)
-        except Exception:
-            pass  # Supabase save is optional — results still return
+            supabase_saved = True
+        except Exception as e:
+            logger.error("Supabase save failed for company %s: %s", company_id, str(e))
+            # Results still return — no data loss, just no persistence
 
-        _scans[result.scan_id] = {"status": "complete", "result": result}
-        return JSONResponse(content={"success": True, "scan_id": result.scan_id, **_result_to_json(result)})
+        _scans[result.scan_id] = {"status": "complete", "result": result, "batch_id": batch_id}
+        _persist_scan(result.scan_id, result)
+        return JSONResponse(content={
+            "success": True, "scan_id": result.scan_id, "batch_id": batch_id,
+            "supabase_saved": supabase_saved, **_result_to_json(result),
+        })
     except HTTPException:
         raise
     except Exception as e:
@@ -172,7 +216,39 @@ async def qiwa_status(scan_id: str):
     return {
         "scan_id": scan_id,
         "status": scan["status"],
+        "batch_id": scan.get("batch_id"),
     }
+
+
+@router.get("/qiwa/batch/{batch_id}")
+async def qiwa_get_batch(batch_id: str):
+    """Retrieve batch scan results from Supabase by batch_id."""
+    try:
+        from app.database import select
+        batches = await select("audit_batches", {"id": f"eq.{batch_id}"}, use_admin=True)
+        if not batches:
+            raise HTTPException(status_code=404, detail="Batch not found")
+        batch = batches[0]
+        records = await select(
+            "employee_records",
+            {"batch_id": f"eq.{batch_id}"},
+            use_admin=True,
+        )
+        return {
+            "success": True,
+            "batch_id": batch_id,
+            "company_id": batch.get("company_id"),
+            "total_records": batch.get("total_records"),
+            "saudization_ratio": batch.get("saudization_ratio"),
+            "nitaqat_band": batch.get("nitaqat_band"),
+            "company_health_score": batch.get("company_health_score"),
+            "status": batch.get("status"),
+            "employees": records,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Batch lookup error: {str(e)}")
 
 
 @router.post("/qiwa/simulate")
